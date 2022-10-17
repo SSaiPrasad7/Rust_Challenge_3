@@ -90,8 +90,8 @@ fn main() -> ! {
 
     let style = MonoTextStyleBuilder::new()
         .font(&FONT_7X13_BOLD)
-        .text_color(Rgb565::BLACK)
-        .background_color(Rgb565::WHITE)
+        .text_color(Rgb565::WHITE)
+        // .background_color(Rgb565::GREEN)
         .build();
 
     // Create a text at position (20, 30) and draw it using style defined above
@@ -129,14 +129,15 @@ fn main() -> ! {
     
     loop 
     {
-        unsafe
-        {
+        unsafe 
+        {       
             if INTERRUPT_FLAG == true
             {
                 INTERRUPT_FLAG = false; 
                 start_flag = true; 
             }
         }
+    
         if start_flag == true
         {
             // Write to the USART
@@ -191,7 +192,9 @@ fn TIMER1() {
     unsafe {
         if let Some(timer1) = G_TIMER1.as_mut() {
             timer1.clear_update_interrupt_flag();
-            INTERRUPT_FLAG = true;
+            riscv::interrupt::free(|_|{
+                INTERRUPT_FLAG = true;
+            });
         }
     }
 }
